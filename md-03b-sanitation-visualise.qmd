@@ -1,7 +1,7 @@
 ---
 title: "Data transformation with dplyr"
 subtitle: "And make a plot"
-author: ""
+author: "Mabvuto Yesaya"
 format:
   html:
     embed-resources: true
@@ -48,6 +48,8 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 
 ```{r}
 
+glimpse(sanitation)
+
 ```
 
 ## Task 2
@@ -55,6 +57,9 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 1.  Use the `count()` function with varname_short and varname_long to identify the definitions of the levels in these two variables.
 
 ```{r}
+
+sanitation |> 
+  count(varname_short,varname_long)
 
 ```
 
@@ -69,6 +74,9 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 2.  Store the result as a new object in your environment with a name of your choice.
 
 ```{r}
+sanitation_malawi_2000_2020<-sanitation |>
+  rename(country=name) |> 
+  filter(country=="Malawi", year %in% c(2000, 2020),varname_short=="san_sm")
 
 ```
 
@@ -77,6 +85,8 @@ sanitation <- read_csv("data/jmp_wld_sanitation_long.csv")
 1.  Use the `count()` function with the data you created in Task 3 to verify that year 2000 and 2020 remained in the year variable.
 
 ```{r}
+sanitation_malawi_2000_2020 |> 
+  count(year)
 
 ```
 
@@ -101,6 +111,18 @@ geom_text(aes(label = round(percent, 1)),
 
 ```{r}
 
+ggplot(sanitation_malawi_2000_2020,
+       aes(x=residence,
+           y=percent,
+           fill="varname_long"))+
+  geom_col()+
+  facet_wrap(~year)+
+  scale_fill_colorblind()+
+  geom_text(aes(label = round(percent, 1)), 
+          position = position_stack(vjust = 0.5),
+          size = 3,
+          color = "white") 
+
 ```
 
 ## Task 6
@@ -108,13 +130,26 @@ geom_text(aes(label = round(percent, 1)),
 If you haven't worked with JMP indicators before, the following questions will be challenging to answer.
 
 1.  Look at the plot that you created. What do you notice about the order of the bars / order of the legend?
+
+    -The order of the bars is arranged alphabetically (in descending) order of the labels
+
 2.  What would you want to change?
+
+    -I would want to change the order of the bars to be shown in descending order of the percent value
+
 3.  Why did we remove "safely managed sanitation services" from the data set in Task 3?
+
+    -I do not know
 
 ## Task 7
 
 1.  Run the code in the code chunk below.
+
 2.  What do you observe when you look at the code and plot?
+
+    -The plot is for only 2020
+
+    -Different plots have been faceted into grids where the vertical variables are the residence (rural, etc) and the horizontal variables are the types of sanitation
 
 ```{r}
 
